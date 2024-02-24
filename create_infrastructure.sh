@@ -14,8 +14,7 @@ gcloud auth application-default login
 
 terraform apply -var project=${PROJECT_ID}
 
-gcloud container clusters get-credentials airflow-cluster
+gcloud container clusters get-credentials airflow-cluster --region us-central1
 gcloud config set container/cluster airflow-cluster
 
-kubectl create secret generic cloudsql-instance-credentials \
-	--from-file=credentials.json=.keys/airflow-cloudsql.json
+kubectl create secret generic cloudsql-instance-credentials # -from-file=credentials.json=.keys/airflow-cloudsql.json
