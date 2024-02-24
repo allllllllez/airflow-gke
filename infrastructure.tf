@@ -16,7 +16,7 @@ variable "zone" {
 }
 
 provider "google" {
-  version = "~> 1.5"
+  version = "~> 5.17"
   project = "${var.project}"
   region = "${var.region}"
 }
@@ -30,15 +30,18 @@ resource "google_compute_disk" "airflow-redis-disk" {
   type  = "pd-ssd"
   size = "200"
   zone  = "${var.zone}"
+  # location  = "${var.zone}"
 }
 
 resource "google_sql_database_instance" "airflow-db" {
   name = "airflow-db"
-  database_version = "POSTGRES_9_6"
+  # database_version = "POSTGRES_9_6"
+  database_version = "MYSQL_8_0"
   region = "${var.region}"
   settings {
     tier = "db-g1-small"
   }
+  deletion_protection = false
 }
 
 resource "google_sql_database" "airflow-schema" {
@@ -55,10 +58,12 @@ resource "google_sql_user" "proxyuser" {
 
 resource "google_container_cluster" "airflow-cluster" {
   name = "airflow-cluster"
-  zone = "${var.zone}"
+  # zone = "${var.zone}"
+  location = "${var.region}"
   initial_node_count = "1"
   node_config {
     machine_type = "n1-standard-4"
     oauth_scopes = ["https://www.googleapis.com/auth/devstorage.read_only"]
   }
+  deletion_protection = false 
 }
